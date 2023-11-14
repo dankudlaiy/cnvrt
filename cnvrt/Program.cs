@@ -1,7 +1,11 @@
+using iText.IO.Font;
+using iText.IO.Font.Constants;
+using iText.Kernel.Font;
 using OfficeOpenXml;
 using iText.Kernel.Pdf;
 using iText.Layout;
 using iText.Layout.Element;
+using iText.Layout.Font;
 using Xceed.Words.NET;
 
 namespace cnvrt;
@@ -84,6 +88,8 @@ internal static class Program
         
         using var document = new Document(pdfDocument);
         
+        document.SetFont(GetFont());
+        
         foreach (var worksheet in package.Workbook.Worksheets)
         {
             document.Add(new Paragraph(worksheet.Name));
@@ -113,6 +119,8 @@ internal static class Program
         using var pdfDocument = new PdfDocument(pdfWriter);
         
         using var document = new Document(pdfDocument);
+
+        document.SetFont(GetFont());
         
         foreach (var paragraph in doc.Paragraphs)
         {
@@ -139,15 +147,27 @@ internal static class Program
         for (var i = 0; i < 4; i++)
         {
             Console.SetCursorPosition(0, Console.CursorTop - 1);
-            Console.Write(new string(' ', Console.WindowWidth));
+            Console.Write(new string(' ', 67));
         }
         
         Console.SetCursorPosition(left, Console.CursorTop - 1);
         
-        Console.Write(new string(' ', Console.WindowWidth - left));
+        Console.Write(new string(' ', 67));
         
         Console.SetCursorPosition(left, Console.CursorTop);
 
         _xlmsg = false;
+    }
+
+    private static PdfFont GetFont()
+    {
+        var dir = Directory.GetCurrentDirectory();
+
+        var path = Path.Combine(dir, "arial-unicode-ms.ttf");
+
+        var fontProgram = FontProgramFactory.CreateFont(path);
+
+        return PdfFontFactory.CreateFont(fontProgram, PdfEncodings.IDENTITY_H, 
+            PdfFontFactory.EmbeddingStrategy.FORCE_EMBEDDED);
     }
 }
